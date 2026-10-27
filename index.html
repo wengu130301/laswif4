@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF6EF">
+<meta name="description" content="F4 四人专属纪念站，记录我们的资料、相识故事与专属时光。">
+<title>F4 · 四个人的专属纪念站</title>
+<style>
+/* =========================================================
+   F4 纪念站 · 单文件样式
+   结构：变量 → 基础 → 顶部语言切换 → 计时器 → 黑板 → 卡片 → 寄语 → 页脚
+   ========================================================= */
+
+:root{
+  --bg:#FAF6EF;
+  --bg-soft:#F3ECE0;
+  --ink:#2C2823;
+  --muted:#867B6C;
+  --hint:#B6AB9C;
+  --line:#E8DFD1;
+  --card:#FFFDF8;
+  --accent:#C86B4A;
+  --board:#26382F;
+  --wood:#A9764F;
+  --wood-dark:#7C5233;
+  --radius:20px;
+  --shadow:0 10px 28px rgba(94,74,52,.08);
+  --font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC",sans-serif;
+  --font-serif:"Songti SC","STSong","Source Han Serif SC","Noto Serif CJK SC",Georgia,serif;
+  --font-hand:"Ma Shan Zheng","Kaiti SC","STKaiti","KaiTi","楷体",cursive;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:var(--font-sans);
+  font-size:16px;
+  line-height:1.7;
+  color:var(--ink);
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(48rem 32rem at 8% -8%, #FBEFE0 0%, rgba(251,239,224,0) 62%),
+    radial-gradient(44rem 30rem at 100% 2%, #EEF4EC 0%, rgba(238,244,236,0) 58%);
+  background-repeat:no-repeat;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+h1,h2,h3,p,ul,dl,dd{margin:0}
+ul{padding:0;list-style:none}
+
+.wrap{
+  width:100%;
+  max-width:1080px;
+  margin:0 auto;
+  padding:0 clamp(16px,4vw,32px);
+}
+
+/* ---------------- 顶部悬浮：简繁切换 ---------------- */
+.lang-switch{
+  position:fixed;
+  top:calc(14px + env(safe-area-inset-top,0px));
+  right:calc(16px + env(safe-area-inset-right,0px));
+  z-index:50;
+  display:flex;
+  gap:4px;
+  padding:4px;
+  border-radius:999px;
+  background:rgba(255,253,248,.62);
+  border:1px solid rgba(200,180,155,.45);
+  -webkit-backdrop-filter:blur(14px) saturate(1.5);
+  backdrop-filter:blur(14px) saturate(1.5);
+  box-shadow:0 8px 24px rgba(94,74,52,.10);
+}
+
+.lang-switch button{
+  appearance:none;
+  -webkit-appearance:none;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.08em;
+  color:var(--muted);
+  padding:7px 15px;
+  border-radius:999px;
+  transition:color .25s ease, background-color .25s ease, box-shadow .25s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.lang-switch button[aria-pressed="true"]{
+  background:var(--ink);
+  color:#FDFBF6;
+  box-shadow:0 4px 12px rgba(44,40,35,.18);
+}
+
+.lang-switch button:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* ---------------- C 位：相识计时器 ---------------- */
+.hero{
+  text-align:center;
+  padding:clamp(92px,15vh,148px) 0 clamp(6px,2vw,14px);
+}
+
+.eyebrow{
+  font-size:clamp(.72rem,1.9vw,.82rem);
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.timer{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  gap:.2em .3em;
+  margin:clamp(8px,2vw,16px) 0 0;
+  font-size:clamp(1rem,2.5vw,1.28rem);
+  font-weight:500;
+  letter-spacing:.09em;
+  color:var(--muted);
+}
+
+.timer-value{
+  display:inline-flex;
+  align-items:baseline;
+  gap:.1em;
+  white-space:nowrap;
+}
+
+.days{
+  font-family:var(--font-serif);
+  font-size:clamp(3.2rem,12.5vw,7rem);
+  line-height:1;
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:.02em;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+  text-shadow:0 8px 26px rgba(200,107,74,.16);
+}
+
+.unit-day{
+  font-size:clamp(1rem,2.5vw,1.3rem);
+  color:var(--ink);
+  letter-spacing:.1em;
+}
+
+.sub-timer{
+  display:flex;
+  justify-content:center;
+  gap:clamp(8px,2.4vw,18px);
+  margin:clamp(14px,3vw,22px) 0 0;
+  font-size:clamp(.78rem,1.9vw,.88rem);
+  color:var(--muted);
+}
+
+.seg{
+  display:inline-flex;
+  align-items:baseline;
+  gap:3px;
+}
+
+.seg b{
+  font-weight:600;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+}
+
+.seg em{font-style:normal;font-size:.86em}
+
+.hero-note{
+  margin:clamp(16px,3vw,24px) 0 0;
+  font-size:clamp(.78rem,1.9vw,.86rem);
+  color:var(--hint);
+  letter-spacing:.06em;
+}
+
+/* ---------------- 黑板手写区 ---------------- */
+.board-section{
+  padding:clamp(30px,6vw,52px) 0 0;
+}
+
+.board{
+  position:relative;
+  max-width:900px;
+  margin:0 auto;
+  padding:clamp(26px,5vw,46px) clamp(22px,5vw,52px);
+  border-radius:14px;
+  background:var(--board);
+  box-shadow:
+    0 0 0 10px var(--wood),
+    0 0 0 12px var(--wood-dark),
+    0 22px 44px rgba(80,55,30,.24),
+    inset 0 0 90px rgba(0,0,0,.45);
+}
+
+/* 细噪点 + 擦痕质感 */
+.board::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background-image:
+    radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.4px),
+    radial-gradient(rgba(0,0,0,.16) 1px, transparent 1.6px),
+    linear-gradient(115deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 42%),
+    linear-gradient(295deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,0) 36%);
+  background-size:4px 4px, 7px 7px, 100% 100%, 100% 100%;
+  opacity:.85;
+}
+
+.board-inner{
+  position:relative;
+  z-index:1;
+}
+
+.board-line{
+  margin:0 0 clamp(8px,1.6vw,14px);
+  font-family:var(--font-hand);
+  font-size:clamp(1.02rem,2.9vw,1.65rem);
+  line-height:1.95;
+  letter-spacing:.05em;
+  color:#F4F1E6;
+  opacity:.94;
+  transform:rotate(var(--rot,-.6deg));
+  text-shadow:0 0 1px rgba(255,255,255,.45), 0 0 7px rgba(255,255,255,.12);
+  -webkit-text-stroke:.2px rgba(255,255,255,.16);
+  text-wrap:pretty;
+}
+
+.board-line:last-child{margin-bottom:0}
+
+/* ---------------- 成员卡片 ---------------- */
+.section-head{
+  text-align:center;
+  margin:clamp(50px,8vw,82px) 0 0;
+}
+
+.section-title{
+  font-family:var(--font-serif);
+  font-size:clamp(1.28rem,3.4vw,1.7rem);
+  font-weight:600;
+  letter-spacing:.14em;
+  color:var(--ink);
+}
+
+.section-sub{
+  margin:10px 0 0;
+  font-size:clamp(.8rem,2vw,.9rem);
+  letter-spacing:.05em;
+  color:var(--muted);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:clamp(14px,2.4vw,22px);
+  margin-top:clamp(22px,4vw,34px);
+}
+
+.card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  padding:clamp(18px,2.4vw,24px);
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  transition:transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .35s ease;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:4px;
+  background:var(--c);
+  opacity:.85;
+}
+
+.card-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.avatar{
+  flex:0 0 50px;
+  width:50px;
+  height:50px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:var(--c-soft);
+  color:var(--c-ink);
+  font-family:var(--font-serif);
+  font-size:21px;
+  font-weight:700;
+}
+
+.name{
+  font-family:var(--font-serif);
+  font-size:1.2rem;
+  font-weight:700;
+  letter-spacing:.06em;
+  line-height:1.3;
+}
+
+.gender{
+  display:inline-block;
+  margin-top:4px;
+  padding:1px 9px;
+  border-radius:999px;
+  background:var(--bg-soft);
+  font-size:.72rem;
+  letter-spacing:.1em;
+  color:var(--muted);
+}
+
+.meta{
+  display:grid;
+  gap:7px;
+  margin:clamp(14px,2.4vw,18px) 0 0;
+}
+
+.meta-row{
+  display:flex;
+  gap:8px;
+  font-size:.85rem;
+  align-items:baseline;
+}
+
+.meta-row dt{
+  flex:0 0 3.1em;
+  font-size:.78rem;
+  letter-spacing:.06em;
+  color:var(--muted);
+}
+
+.meta-row dd{
+  flex:1;
+  min-width:0;
+  word-break:break-word;
+  color:var(--ink);
+}
+
+
+.chips-label{
+  margin:clamp(14px,2.4vw,18px) 0 8px;
+  font-size:.78rem;
+  letter-spacing:.06em;
+  color:var(--muted);
+}
+
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.chips li{
+  padding:3px 10px;
+  border-radius:999px;
+  background:var(--c-soft);
+  color:var(--c-ink);
+  font-size:.75rem;
+  letter-spacing:.03em;
+  line-height:1.6;
+}
+
+.note{
+  margin:14px 0 0;
+  padding:9px 12px;
+  border-left:3px solid var(--c);
+  border-radius:0 10px 10px 0;
+  background:var(--c-soft);
+  font-size:.8rem;
+  line-height:1.65;
+  color:#5C5346;
+}
+
+/* ---------------- 底部寄语 ---------------- */
+.wish{
+  margin-top:clamp(48px,8vw,82px);
+}
+
+.wish-card{
+  max-width:900px;
+  margin:0 auto;
+  padding:clamp(22px,4vw,34px);
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+}
+
+.wish-title{
+  font-family:var(--font-serif);
+  font-size:clamp(1.15rem,3vw,1.4rem);
+  font-weight:600;
+  letter-spacing:.14em;
+}
+
+.wish-sub{
+  margin:8px 0 0;
+  font-size:clamp(.78rem,2vw,.86rem);
+  color:var(--muted);
+  letter-spacing:.04em;
+}
+
+.wish-lines{
+  margin-top:clamp(14px,3vw,20px);
+  min-height:186px;
+  padding:0 2px;
+  font-family:var(--font-hand);
+  font-size:clamp(1rem,2.6vw,1.15rem);
+  line-height:32px;
+  color:var(--ink);
+  background-image:repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    var(--line) 31px,
+    var(--line) 32px
+  );
+  background-position:0 1px;
+  outline:none;
+  cursor:text;
+  word-break:break-word;
+}
+
+.wish-lines:empty::before{
+  content:attr(data-placeholder);
+  font-family:var(--font-sans);
+  font-size:.86rem;
+  color:var(--hint);
+  letter-spacing:.04em;
+}
+
+.wish-lines:focus-visible{
+  border-radius:6px;
+  box-shadow:0 0 0 2px rgba(200,107,74,.25);
+}
+
+.wish-foot{
+  margin:14px 0 0;
+  font-size:.72rem;
+  letter-spacing:.06em;
+  color:var(--hint);
+  text-align:right;
+}
+
+/* ---------------- 页脚 ---------------- */
+.site-footer{
+  text-align:center;
+  padding:clamp(40px,6vw,68px) 16px calc(30px + env(safe-area-inset-bottom,0px));
+  color:var(--muted);
+  font-size:.78rem;
+  letter-spacing:.1em;
+  line-height:2;
+}
+
+.site-footer .footer-sub{color:var(--hint)}
+
+/* ---------------- 动效 ---------------- */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.hero > *{animation:fadeUp .9s cubic-bezier(.2,.7,.3,1) both}
+.hero > *:nth-child(2){animation-delay:.08s}
+.hero > *:nth-child(3){animation-delay:.16s}
+.hero > *:nth-child(4){animation-delay:.24s}
+
+.reveal{opacity:1;transform:none}
+.js .reveal{opacity:0;transform:translateY(16px)}
+.js .reveal.is-in{
+  opacity:1;
+  transform:none;
+  transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1);
+}
+
+@media (hover:hover) and (pointer:fine){
+  .card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 18px 38px rgba(94,74,52,.14);
+  }
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width:1024px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media (max-width:620px){
+  .grid{grid-template-columns:1fr}
+
+  .lang-switch{
+    top:calc(10px + env(safe-area-inset-top,0px));
+    right:50%;
+    transform:translateX(50%);
+  }
+
+  .lang-switch button{
+    font-size:12.5px;
+    padding:6px 13px;
+  }
+
+  .hero{padding-top:clamp(80px,17vh,110px)}
+
+  .board{
+    box-shadow:
+      0 0 0 7px var(--wood),
+      0 0 0 9px var(--wood-dark),
+      0 16px 30px rgba(80,55,30,.22),
+      inset 0 0 60px rgba(0,0,0,.4);
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .js .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部固定：简体 / 繁体切换 -->
+<header class="lang-switch" role="group" aria-label="简体与繁体切换">
+  <button type="button" data-lang="zh" aria-pressed="true" data-s="简体" data-t="簡體">简体</button>
+  <button type="button" data-lang="zhTW" aria-pressed="false" data-s="繁体" data-t="繁體">繁体</button>
+</header>
+
+<main class="wrap">
+
+  <!-- C 位：相识天数计时器 -->
+  <section class="hero" aria-label="相识计时器">
+    <p class="eyebrow" data-s="始于 2026 年 10 月 27 日 · 我们 F4 的第一天" data-t="始於 2026 年 10 月 27 日 · 我們 F4 的第一天">始于 2026 年 10 月 27 日 · 我们 F4 的第一天</p>
+
+    <h1 class="timer">
+      <span data-s="我们 F4 已经相识陪伴：" data-t="我們 F4 已經相識陪伴：">我们 F4 已经相识陪伴：</span>
+      <span class="timer-value">
+        <span class="days" id="days">0</span>
+        <span class="unit-day" data-s="天" data-t="天">天</span>
+      </span>
+    </h1>
+
+    <p class="sub-timer">
+      <span class="seg"><b id="hh">00</b><em data-s="时" data-t="時">时</em></span>
+      <span class="seg"><b id="mm">00</b><em data-s="分" data-t="分">分</em></span>
+      <span class="seg"><b id="ss">00</b><em data-s="秒" data-t="秒">秒</em></span>
+    </p>
+
+    <p class="hero-note" data-s="时间会一直向前，我们也是。" data-t="時間會一直向前，我們也是。">时间会一直向前，我们也是。</p>
+  </section>
+
+  <!-- 黑板手写区 -->
+  <section class="board-section" aria-label="黑板留言">
+    <div class="board">
+      <div class="board-inner">
+        <p class="board-line" data-s="我们都是中国人，我们都是炎黄子孙，" data-t="我們都是中國人，我們都是炎黃子孫，">我们都是中国人，我们都是炎黄子孙，</p>
+        <p class="board-line" data-s="中华人民共和国万岁，F4 长长久久，" data-t="中華人民共和國萬歲，F4 長長久久，">中华人民共和国万岁，F4 长长久久，</p>
+        <p class="board-line" data-s="台湾属于中国，是中国不可分割的一部分。" data-t="臺灣屬於中國，是中國不可分割的一部分。">台湾属于中国，是中国不可分割的一部分。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 四张成员卡片 -->
+  <section aria-labelledby="members-title">
+    <div class="section-head">
+      <h2 class="section-title" id="members-title" data-s="F4 成员档案" data-t="F4 成員檔案">F4 成员档案</h2>
+      <p class="section-sub" data-s="四个人，四种颜色，一段一起长大的时光。" data-t="四個人，四種顏色，一段一起長大的時光。">四个人，四种颜色，一段一起长大的时光。</p>
+    </div>
+
+    <div class="grid">
+
+      <!-- 蛋蛋 -->
+      <article class="card reveal" style="--c:#E0A458;--c-soft:#FBF0DD;--c-ink:#8A6425">
+        <div class="card-head">
+          <div class="avatar" aria-hidden="true">蛋</div>
+          <div>
+            <h3 class="name" data-s="蛋蛋" data-t="蛋蛋">蛋蛋</h3>
+            <span class="gender" data-s="男生" data-t="男生">男生</span>
+          </div>
+        </div>
+        <dl class="meta">
+          <div class="meta-row"><dt data-s="年龄" data-t="年齡">年龄</dt><dd data-s="15 岁" data-t="15 歲">15 岁</dd></div>
+          <div class="meta-row"><dt data-s="身份" data-t="身份">身份</dt><dd data-s="初三" data-t="初三">初三</dd></div>
+          <div class="meta-row"><dt data-s="生日" data-t="生日">生日</dt><dd data-s="5 月 26 日" data-t="5 月 26 日">5 月 26 日</dd></div>
+          <div class="meta-row"><dt data-s="地区" data-t="地區">地区</dt><dd data-s="山西阳泉" data-t="山西陽泉">山西阳泉</dd></div>
+        </dl>
+      </article>
+
+      <!-- 文仔 -->
+      <article class="card reveal" style="--c:#6E9BC5;--c-soft:#E7EFF7;--c-ink:#3D6285">
+        <div class="card-head">
+          <div class="avatar" aria-hidden="true">文</div>
+          <div>
+            <h3 class="name" data-s="文仔" data-t="文仔">文仔</h3>
+            <span class="gender" data-s="男生" data-t="男生">男生</span>
+          </div>
+        </div>
+        <dl class="meta">
+          <div class="meta-row"><dt data-s="年龄" data-t="年齡">年龄</dt><dd data-s="13 岁" data-t="13 歲">13 岁</dd></div>
+          <div class="meta-row"><dt data-s="身份" data-t="身份">身份</dt><dd data-s="国二休学" data-t="國二休學">国二休学</dd></div>
+          <div class="meta-row"><dt data-s="生日" data-t="生日">生日</dt><dd data-s="3 月 1 日" data-t="3 月 1 日">3 月 1 日</dd></div>
+          <div class="meta-row"><dt data-s="地区" data-t="地區">地区</dt><dd data-s="中华人民共和国台湾省台北市" data-t="中華人民共和國臺灣省臺北市">中华人民共和国台湾省台北市</dd></div>
+        </dl>
+        <p class="chips-label" data-s="爱好" data-t="愛好">爱好</p>
+        <ul class="chips">
+          <li data-s="搞计算机" data-t="搞計算機">搞计算机</li>
+          <li data-s="和闺蜜打王者荣耀" data-t="和閨蜜打王者榮耀">和闺蜜打王者荣耀</li>
+        </ul>
+        <p class="note" data-s="备注：纯纯正正的中国人" data-t="備註：純純正正的中國人">备注：纯纯正正的中国人</p>
+      </article>
+
+      <!-- 孟孟 -->
+      <article class="card reveal" style="--c:#DE8FA6;--c-soft:#FAE9EE;--c-ink:#964C63">
+        <div class="card-head">
+          <div class="avatar" aria-hidden="true">孟</div>
+          <div>
+            <h3 class="name" data-s="孟孟" data-t="孟孟">孟孟</h3>
+            <span class="gender" data-s="女生" data-t="女生">女生</span>
+          </div>
+        </div>
+        <dl class="meta">
+          <div class="meta-row"><dt data-s="身份" data-t="身份">身份</dt><dd data-s="暂时休学" data-t="暫時休學">暂时休学</dd></div>
+          <div class="meta-row"><dt data-s="生日" data-t="生日">生日</dt><dd data-s="12 月 11 日" data-t="12 月 11 日">12 月 11 日</dd></div>
+        </dl>
+        <p class="chips-label" data-s="爱好" data-t="愛好">爱好</p>
+        <ul class="chips">
+          <li data-s="睡觉" data-t="睡覺">睡觉</li>
+          <li data-s="蛋仔派对" data-t="蛋仔派對">蛋仔派对</li>
+          <li data-s="和平精英" data-t="和平精英">和平精英</li>
+        </ul>
+      </article>
+
+      <!-- 小兑 -->
+      <article class="card reveal" style="--c:#7FAF92;--c-soft:#E7F1EA;--c-ink:#467055">
+        <div class="card-head">
+          <div class="avatar" aria-hidden="true">兑</div>
+          <div>
+            <h3 class="name" data-s="小兑" data-t="小兌">小兑</h3>
+            <span class="gender" data-s="女生" data-t="女生">女生</span>
+          </div>
+        </div>
+        <dl class="meta">
+          <div class="meta-row"><dt data-s="年龄" data-t="年齡">年龄</dt><dd data-s="14 岁" data-t="14 歲">14 岁</dd></div>
+          <div class="meta-row"><dt data-s="身份" data-t="身份">身份</dt><dd data-s="初三" data-t="初三">初三</dd></div>
+          <div class="meta-row"><dt data-s="生日" data-t="生日">生日</dt><dd data-s="4 月 21 日" data-t="4 月 21 日">4 月 21 日</dd></div>
+          <div class="meta-row"><dt data-s="地区" data-t="地區">地区</dt><dd data-s="江西南昌" data-t="江西南昌">江西南昌</dd></div>
+          <div class="meta-row"><dt data-s="性格" data-t="性格">性格</dt><dd data-s="INFP" data-t="INFP">INFP</dd></div>
+        </dl>
+        <p class="chips-label" data-s="爱好" data-t="愛好">爱好</p>
+        <ul class="chips">
+          <li data-s="足球" data-t="足球">足球</li>
+          <li data-s="魔术" data-t="魔術">魔术</li>
+          <li data-s="画画" data-t="畫畫">画画</li>
+          <li data-s="Steam 游戏" data-t="Steam 遊戲">Steam 游戏</li>
+          <li data-s="看动漫" data-t="看動漫">看动漫</li>
+        </ul>
+        <p class="note" data-s="备注：来南昌可以请吃拌粉嘻嘻" data-t="備註：來南昌可以請吃拌粉嘻嘻">备注：来南昌可以请吃拌粉嘻嘻</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- 底部：相识寄语留白 -->
+  <section class="wish" aria-labelledby="wish-title">
+    <div class="wish-card reveal">
+      <h2 class="wish-title" id="wish-title" data-s="相识寄语" data-t="相識寄語">相识寄语</h2>
+      <p class="wish-sub" data-s="这块留白，等以后我们慢慢写满。" data-t="這塊留白，等以後我們慢慢寫滿。">这块留白，等以后我们慢慢写满。</p>
+      <div
+        class="wish-lines"
+        contenteditable="true"
+        role="textbox"
+        aria-multiline="true"
+        aria-labelledby="wish-title"
+        spellcheck="false"
+        data-ph-s="在这里写下想对 F4 说的话……"
+        data-ph-t="在這裡寫下想對 F4 說的話……"
+        data-placeholder="在这里写下想对 F4 说的话……"
+      ></div>
+      <p class="wish-foot" data-s="可直接点击此处输入，内容只保存在本机浏览器中。" data-t="可直接點擊此處輸入，內容只保存在本機瀏覽器中。">可直接点击此处输入，内容只保存在本机浏览器中。</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p data-s="F4 · 四个人的专属纪念站" data-t="F4 · 四個人的專屬紀念站">F4 · 四个人的专属纪念站</p>
+  <p class="footer-sub" data-s="愿我们一直在一起，慢慢长大。" data-t="願我們一直在一起，慢慢長大。">愿我们一直在一起，慢慢长大。</p>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  document.documentElement.classList.add('js');
+
+  /* =====================================================
+     1. 相识计时器
+     基准：2026-10-27 00:00:00（本地时间），纯时间戳计算，永久自动递增
+     ===================================================== */
+  var START_TIME = new Date(2026, 9, 27, 0, 0, 0, 0).getTime();
+
+  var elDays = document.getElementById('days');
+  var elHour = document.getElementById('hh');
+  var elMin = document.getElementById('mm');
+  var elSec = document.getElementById('ss');
+
+  function pad2(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  function renderTimer() {
+    var diff = Date.now() - START_TIME;
+    if (diff < 0) { diff = 0; } // 纪念日到来之前保持 0，不会出现负数
+
+    var totalSeconds = Math.floor(diff / 1000);
+    var days = Math.floor(totalSeconds / 86400);
+    var hours = Math.floor((totalSeconds % 86400) / 3600);
+    var minutes = Math.floor((totalSeconds % 3600) / 60);
+    var seconds = totalSeconds % 60;
+
+    elDays.textContent = String(days);
+    elHour.textContent = pad2(hours);
+    elMin.textContent = pad2(minutes);
+    elSec.textContent = pad2(seconds);
+  }
+
+  // 对齐到下一个整秒刷新，避免长时间运行后累积漂移
+  function timerLoop() {
+    renderTimer();
+    window.setTimeout(timerLoop, 1000 - (Date.now() % 1000));
+  }
+  timerLoop();
+
+  /* =====================================================
+     2. 简体 / 繁体切换
+     方案：文案字典 = 每个文本节点上的 data-s（简体）/ data-t（繁体）
+     全站遍历替换，可反复切换，不丢文本节点
+     ===================================================== */
+  var STORAGE_KEY = 'f4-site-lang';
+  var PAGE_TITLES = {
+    zh: 'F4 · 四个人的专属纪念站',
+    zhTW: 'F4 · 四個人的專屬紀念站'
+  };
+
+  var switchButtons = Array.prototype.slice.call(
+    document.querySelectorAll('.lang-switch button')
+  );
+
+  function applyLang(lang) {
+    var isTraditional = lang === 'zhTW';
+
+    document.documentElement.setAttribute('lang', isTraditional ? 'zh-Hant-TW' : 'zh-CN');
+
+    // 所有带双份文案的文本节点
+    var textNodes = document.querySelectorAll('[data-s]');
+    for (var i = 0; i < textNodes.length; i++) {
+      var value = textNodes[i].getAttribute(isTraditional ? 'data-t' : 'data-s');
+      if (value !== null) {
+        textNodes[i].textContent = value;
+      }
+    }
+
+    // 输入框占位提示（不能走 textContent，需改 data-placeholder 属性）
+    var placeholders = document.querySelectorAll('[data-ph-s]');
+    for (var j = 0; j < placeholders.length; j++) {
+      var ph = placeholders[j].getAttribute(isTraditional ? 'data-ph-t' : 'data-ph-s');
+      if (ph !== null) {
+        placeholders[j].setAttribute('data-placeholder', ph);
+      }
+    }
+
+    // 切换按钮状态
+    for (var k = 0; k < switchButtons.length; k++) {
+      var pressed = switchButtons[k].getAttribute('data-lang') === lang;
+      switchButtons[k].setAttribute('aria-pressed', pressed ? 'true' : 'false');
+    }
+
+    document.title = PAGE_TITLES[isTraditional ? 'zhTW' : 'zh'];
+
+    try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) { /* 隐私模式下忽略 */ }
+  }
+
+  // 点击哪个按钮就切到哪个语言（按钮代表「目标语言」，而非「当前语言」）
+  for (var b = 0; b < switchButtons.length; b++) {
+    switchButtons[b].addEventListener('click', function () {
+      applyLang(this.getAttribute('data-lang') === 'zhTW' ? 'zhTW' : 'zh');
+    });
+  }
+
+  var savedLang = null;
+  try { savedLang = localStorage.getItem(STORAGE_KEY); } catch (e) { savedLang = null; }
+  applyLang(savedLang === 'zhTW' ? 'zhTW' : 'zh');
+
+  /* =====================================================
+     3. 黑板粉笔字：每行随机轻微倾斜，模拟随手写下
+     ===================================================== */
+  var chalkLines = document.querySelectorAll('.board-line');
+  for (var c = 0; c < chalkLines.length; c++) {
+    var rotate = (Math.random() * 2 - 1) * 0.9; // -0.9deg ~ 0.9deg
+    chalkLines[c].style.setProperty('--rot', rotate.toFixed(2) + 'deg');
+  }
+
+  /* =====================================================
+     4. 入场淡入（卡片）
+     ===================================================== */
+  var revealItems = document.querySelectorAll('.reveal');
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          entries[i].target.classList.add('is-in');
+          observer.unobserve(entries[i].target);
+        }
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    for (var r = 0; r < revealItems.length; r++) {
+      observer.observe(revealItems[r]);
+    }
+  } else {
+    for (var r2 = 0; r2 < revealItems.length; r2++) {
+      revealItems[r2].classList.add('is-in');
+    }
+  }
+
+  /* =====================================================
+     5. 寄语便签：清掉空行残留，保证占位提示正常显示
+     ===================================================== */
+  var wishBox = document.querySelector('.wish-lines');
+  if (wishBox) {
+    wishBox.addEventListener('input', function () {
+      var html = this.innerHTML;
+      if (html === '<br>' || html === '<div><br></div>') {
+        this.innerHTML = '';
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
